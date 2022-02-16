@@ -5,6 +5,8 @@
  */
 package innui.modelo.jpa.peliculas;
 
+import static innui.modelo.jpa.peliculas.Film.Film_findAll;
+import static innui.modelo.jpa.peliculas.Film.Film_findLike;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -30,14 +32,16 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(name = "film")
 @NamedQueries({
-    @NamedQuery(name = "Producto.findAll", query = Film.SELECT_findAll),
-    @NamedQuery(name = "Producto.findByFilm_id", query = Film.SELECT_findByFilm_id)
+    @NamedQuery(name = Film_findAll, query = Film.SELECT_findAll),
+    @NamedQuery(name = Film_findLike, query = Film.SELECT_findLike)
 })
 public class Film implements Serializable {
+    public static final String Film_findAll = "Film.findAll";
+    public static final String Film_findLike = "Film.findLike";   
     public static final String SELECT_findAll = "SELECT p FROM Film p";
     public static final String SELECT_findAll_order = SELECT_findAll + " ORDER BY p.";
-    public static final String SELECT_findByFilm_id = "SELECT p FROM Film p WHERE p.description like :description";
-    public static final String SELECT_findByFilm_id_order = SELECT_findByFilm_id + " ORDER BY p.";
+    public static final String SELECT_findLike = "SELECT p FROM Film p WHERE p.description like :description";
+    public static final String SELECT_findLike_order = SELECT_findLike + " ORDER BY p.";
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

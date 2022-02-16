@@ -9,8 +9,8 @@ import innui.modelo.jpa.LinkedList_envuelta;
 import static innui.modelo.jpa.PersistenceConfig.jdbc_contraseña;
 import static innui.modelo.jpa.PersistenceConfig.jdbc_usuario;
 import innui.modelo.jpa.peliculas.Film;
+import static innui.modelo.jpa.peliculas.Film.Film_findLike;
 import static innui.modelo.jpa.peliculas.Film.SELECT_findAll_order;
-import static innui.modelo.jpa.peliculas.Film.SELECT_findByFilm_id_order;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +28,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import java.util.LinkedList;
+import static innui.modelo.jpa.peliculas.Film.SELECT_findLike_order;
 
 /**
  *
@@ -80,12 +81,14 @@ public class FilmFacadeREST extends AbstractFacade<Film> {
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") String id) {
-        String texto;     
+        String texto;
+        Integer id_num;
         texto = context.getHeader(jdbc_usuario);
         propiedades_mapa.put(jdbc_usuario, texto);
         texto = context.getHeader(jdbc_contraseña);        
         propiedades_mapa.put(jdbc_contraseña, texto);
-        Film film = super.find(id);
+        id_num = Integer.parseInt(id);
+        Film film = super.find(id_num);
         super.remove(film);
     }
 
@@ -93,12 +96,14 @@ public class FilmFacadeREST extends AbstractFacade<Film> {
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Film find(@PathParam("id") String id) {
-        String texto;     
+        String texto;   
+        Integer id_num;
         texto = context.getHeader(jdbc_usuario);
         propiedades_mapa.put(jdbc_usuario, texto);
         texto = context.getHeader(jdbc_contraseña);        
         propiedades_mapa.put(jdbc_contraseña, texto);
-        Film film = super.find(id);
+        id_num = Integer.parseInt(id);
+        Film film = super.find(id_num);
         return film;
     }
 
@@ -172,8 +177,8 @@ public class FilmFacadeREST extends AbstractFacade<Film> {
         propiedades_mapa.put(jdbc_usuario, texto);
         texto = context.getHeader(jdbc_contraseña);        
         propiedades_mapa.put(jdbc_contraseña, texto);
-        TypedQuery<Film> typedQuery = getEntityManager().createNamedQuery("Film.findByCodigoFilm", Film.class);
-        typedQuery = typedQuery.setParameter("descripcion", descripcion);
+        TypedQuery<Film> typedQuery = getEntityManager().createNamedQuery(Film_findLike, Film.class);
+        typedQuery = typedQuery.setParameter("description", descripcion);
         typedQuery = typedQuery.setMaxResults(to - from + 1);
         typedQuery = typedQuery.setFirstResult(from);
         films_lista = typedQuery.getResultList();
@@ -231,7 +236,7 @@ public class FilmFacadeREST extends AbstractFacade<Film> {
         propiedades_mapa.put(jdbc_usuario, texto);
         texto = context.getHeader(jdbc_contraseña);        
         propiedades_mapa.put(jdbc_contraseña, texto);
-        String consulta = SELECT_findByFilm_id_order
+        String consulta = SELECT_findLike_order
                 + campo_ordenacion;
         if (asc.toLowerCase().equals("desc")) {
             consulta = consulta + " DESC";
